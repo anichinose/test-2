@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple English Vocabulary Quiz</title>
+  <style>
+    :root { --bg:#0f172a; --panel:#111827; --accent:#22c55e; --error:#ef4444; --text:#e5e7eb; }
+    html,body{margin:0;height:100%;}
+    body{font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background: var(--bg); color: var(--text); display:flex; align-items:center; justify-content:center;}
+    .app{width: min(720px, 92vw); background: var(--panel); border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.35)}
+    h1{margin:0 0 6px;font-size: clamp(18px, 3vw, 22px)}
+    .muted{opacity:.8; font-size: 14px; margin-bottom: 18px}
+    .card{background:#0b1020; border:1px solid #1f2937; border-radius:14px; padding:18px;}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 14px}
+    .pill{background:#0b1328; border:1px solid #1f2a44; padding:6px 10px; border-radius:999px; font-size:12px}
+    .q{font-size: clamp(16px, 3.2vw, 20px); font-weight:700; letter-spacing:.2px}
+    .options{display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px}
+    button.opt{all:unset; background:#0e1530; border:1px solid #1f2a44; padding:12px 14px; border-radius:12px; cursor:pointer; line-height:1.35}
+    button.opt:hover{border-color:#334155}
+    button.opt.correct{border-color: var(--accent); box-shadow: 0 0 0 2px rgba(34,197,94,.25) inset}
+    button.opt.wrong{border-color: var(--error); box-shadow: 0 0 0 2px rgba(239,68,68,.25) inset}
+    .controls{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
+    .btn{all:unset; background:#1e293b; padding:10px 14px; border-radius:10px; cursor:pointer; border:1px solid #334155}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+    .score{font-weight:700}
+    .footer{margin-top:16px; font-size:13px; opacity:.8}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>English Vocabulary Quiz</h1>
+    <div class="muted">Choose the correct meaning. 8 questions total.</div>
+
+    <div class="card">
+      <div class="row">
+        <div class="pill" id="progress">1 / 8</div>
+        <div class="pill" id="status">Please choose</div>
+      </div>
+      <div class="q" id="question">Loading…</div>
+      <div class="options" id="options"></div>
+      <div class="controls">
+        <div class="score" id="score">Score: 0</div>
+        <button class="btn" id="nextBtn" disabled>Next ▶</button>
+      </div>
+    </div>
+
+    <div class="footer" id="footer"></div>
+  </div>
+
+  <script>
+    // Question data (word, correct definition, and distractors)
+    const DATA = [
+      { word: 'abandon', correct: 'to give up / desert', distractors: ['to shrink', 'to postpone', 'to decorate'] },
+      { word: 'concise', correct: 'brief and clear', distractors: ['stubborn', 'vague', 'luxurious'] },
+      { word: 'abundant', correct: 'plentiful', distractors: ['scarce', 'bitter', 'dull'] },
+      { word: 'fragile', correct: 'easily broken', distractors: ['durable', 'toxic', 'ordinary'] },
+      { word: 'diligent', correct: 'hardworking', distractors: ['lazy', 'impulsive', 'careless'] },
+      { word: 'omit', correct: 'to leave out', distractors: ['to emphasize', 'to praise', 'to expand'] },
+      { word: 'resemble', correct: 'to look like', distractors: ['to oppose', 'to thank', 'to own'] },
+      { word: 'sufficient', correct: 'enough', distractors: ['insufficient', 'unpleasant', 'excessive'] },
+    ];
+
+    // Utility: shuffle
+    const shuffle = (arr) => arr.map(v=>[Math.random(), v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
+
+    // State
+    let idx = 0;
+    let score = 0;
+    let answered = false;
+    const questions = shuffle(DATA);
+
+    // Elements
+    const qEl = document.getElementById('question');
+    const optEl = document.getElementById('options');
+    const nextBtn = document.getElementById('nextBtn');
+    const statusEl = document.getElementById('status');
+    const scoreEl = document.getElementById('score');
+    const progressEl = document.getElementById('progress');
+    const footerEl = document.getElementById('footer');
+
+    function render() {
+      const q = questions[idx];
+      progressEl.textContent = `${idx+1} / ${questions.length}`;
+      qEl.textContent = `What does “${q.word}” mean?`;
+      statusEl.textContent = 'Please choose';
+      nextBtn.disabled = true;
+      answered = false;
+      optEl.innerHTML = '';
+
+      const options = shuffle([q.correct, ...q.distractors]);
+      options.forEach(text => {
+        const btn = document.createElement('button');
+        btn.className = 'opt';
+        btn.textContent = text;
+        btn.onclick = () => choose(text, btn, q.correct);
+        optEl.appendChild(btn);
+      });
+    }
+
+    function choose(choice, btn, correct) {
+      if (answered) return;
+      answered = true;
+      const buttons = [...document.querySelectorAll('button.opt')];
+      buttons.forEach(b => b.disabled = true);
+      const isRight = choice === correct;
+      btn.classList.add(isRight ? 'correct' : 'wrong');
+      statusEl.textContent = isRight ? 'Correct!' : 'Wrong';
+      if (isRight) score++;
+      scoreEl.textContent = `Score: ${score}`;
+      // Highlight correct answer
+      buttons.forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+      nextBtn.disabled = false;
+
+      if (idx === questions.length - 1) nextBtn.textContent = 'See Results';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (idx < questions.length - 1) {
+        idx++;
+        nextBtn.textContent = 'Next ▶';
+        render();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult(){
+      const total = questions.length;
+      const rate = Math.round((score/total)*100);
+      qEl.textContent = `Great job! Your score: ${score} / ${total} (${rate}%)`;
+      optEl.innerHTML = '';
+      statusEl.textContent = rate >= 75 ? 'Well done!' : 'Try again!';
+      nextBtn.textContent = 'Restart';
+      nextBtn.disabled = false;
+      nextBtn.onclick = () => window.location.reload();
+      footerEl.innerHTML = '<small>Hint: e.g., diligent = hardworking</small>';
+    }
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
