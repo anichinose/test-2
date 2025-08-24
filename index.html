@@ -1,143 +1,211 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Simple English Vocabulary Quiz</title>
+  <title>英検１級語彙問題</title>
   <style>
-    :root { --bg:#0f172a; --panel:#111827; --accent:#22c55e; --error:#ef4444; --text:#e5e7eb; }
-    html,body{margin:0;height:100%;}
-    body{font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background: var(--bg); color: var(--text); display:flex; align-items:center; justify-content:center;}
-    .app{width: min(720px, 92vw); background: var(--panel); border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.35)}
-    h1{margin:0 0 6px;font-size: clamp(18px, 3vw, 22px)}
-    .muted{opacity:.8; font-size: 14px; margin-bottom: 18px}
-    .card{background:#0b1020; border:1px solid #1f2937; border-radius:14px; padding:18px;}
-    .row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 14px}
-    .pill{background:#0b1328; border:1px solid #1f2a44; padding:6px 10px; border-radius:999px; font-size:12px}
-    .q{font-size: clamp(16px, 3.2vw, 20px); font-weight:700; letter-spacing:.2px}
-    .options{display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px}
-    button.opt{all:unset; background:#0e1530; border:1px solid #1f2a44; padding:12px 14px; border-radius:12px; cursor:pointer; line-height:1.35}
-    button.opt:hover{border-color:#334155}
-    button.opt.correct{border-color: var(--accent); box-shadow: 0 0 0 2px rgba(34,197,94,.25) inset}
-    button.opt.wrong{border-color: var(--error); box-shadow: 0 0 0 2px rgba(239,68,68,.25) inset}
-    .controls{display:flex; justify-content:space-between; align-items:center; margin-top:14px}
-    .btn{all:unset; background:#1e293b; padding:10px 14px; border-radius:10px; cursor:pointer; border:1px solid #334155}
-    .btn:disabled{opacity:.5; cursor:not-allowed}
-    .score{font-weight:700}
-    .footer{margin-top:16px; font-size:13px; opacity:.8}
+    :root{ font-size:17px; }
+    @media (min-width:1280px){ :root{ font-size:18px; } }
+    @media (max-width:480px){ :root{ font-size:16px; } }
+
+    html, body { height:100%; }
+    * { box-sizing:border-box; }
+    body{
+      margin:0; padding:0; overflow:hidden;
+      display:flex; justify-content:center; align-items:flex-start; min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif; color:#fff;
+      background:url('https://images.unsplash.com/photo-1508264165352-258859e62245?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center/cover fixed;
+    }
+
+    .quiz-root{ width:100%; height:100%; display:flex; justify-content:center; align-items:stretch; }
+    .quiz-container{
+      width:100%; height:100%; max-width:1100px; margin:0 auto;
+      background:rgba(0,0,0,.78);
+      padding:clamp(16px,2vw,24px);
+      display:flex; flex-direction:column; position:relative;
+      border-left:1px solid rgba(255,255,255,.06);
+      border-right:1px solid rgba(255,255,255,.06);
+    }
+    @media (max-width:768px){ .quiz-container{ height:calc(var(--vh,1vh)*100); } }
+
+    .header{ text-align:center; margin-bottom:8px; }
+    .header h1{ margin:0; font-size:1.6rem; color:#facc15; }
+
+    .muted{ color:#cbd5e1; font-size:0.95rem; text-align:center; margin:2px 0 10px; }
+    #quiz{ flex:1; display:flex; flex-direction:column; gap:10px; }
+    .question{ font-size:1.25rem; line-height:1.65; font-weight:bold; margin:4px 0 0; }
+    .sentence-ja{ min-height:4.4em; visibility:hidden; margin:6px 0 10px; color:#e2e8f0; font-size:1.05rem; }
+
+    .choices{ list-style:none; padding:0; margin:6px 0 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; }
+    .choice-row{ display:grid; grid-template-columns:42px 1fr; gap:10px; align-items:center; }
+
+    .icon-btn{ width:42px; height:42px; border-radius:8px; border:1px solid #facc15; background:#0f172a; color:#e5e7eb; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+    .icon-btn:hover{ background:#1f2937; }
+
+    .choice-btn{ width:100%; padding:12px; border:1px solid #facc15; border-radius:8px; background:#1f2937; color:#fff; cursor:pointer; font-size:1.1rem; text-align:left; min-height:52px; }
+    .choice-btn:hover{ background:#374151; }
+
+    .correct{ background:#15803d !important; border-color:#22c55e !important; }
+    .wrong{ background:#b91c1c !important; border-color:#ef4444 !important; }
+    .ja{ display:inline-block; margin-left:8px; color:#cbd5e1; font-size:0.95rem; }
+
+    .actions{ display:flex; justify-content:center; align-items:center; margin-top:10px; min-height:56px; }
+    #next-btn{ padding:12px 20px; font-size:1.05rem; border-radius:10px; border:none; background:#3b82f6; color:#fff; cursor:pointer; visibility:hidden; }
+
+    .finish-wrap{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:20px; text-align:center; }
+    #final-score{ font-size:1.25rem; font-weight:bold; }
+    #final-time{ font-size:1.05rem; color:#facc15; }
+    #final-msg{ font-size:1.05rem; color:#e2e8f0; max-width:780px; }
+    #yt-btn{ padding:12px 18px; font-size:1rem; border-radius:8px; border:none; background:#ff0000; color:#fff; cursor:pointer; display:none; }
+    #restart-btn{ padding:12px 18px; font-size:1rem; border-radius:8px; border:none; background:#3b82f6; color:#fff; cursor:pointer; display:none; }
+
+    @media (max-width:560px){ .choices{ grid-template-columns:1fr; } .question{ font-size:1.05rem; } }
   </style>
+  <script>
+    // Mobile 100vh fix
+    function setVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
+    setVH();
+  </script>
 </head>
 <body>
-  <div class="app">
-    <h1>English Vocabulary Quiz</h1>
-    <div class="muted">Choose the correct meaning. 8 questions total.</div>
+  <div class="quiz-root">
+    <div class="quiz-container">
+      <div class="header"><h1>英検１級語彙問題</h1></div>
+      <div class="muted" id="progress">Question 1 of 22</div>
+      <div id="quiz"></div>
+      <div class="actions"><button id="next-btn">Next</button></div>
 
-    <div class="card">
-      <div class="row">
-        <div class="pill" id="progress">1 / 8</div>
-        <div class="pill" id="status">Please choose</div>
-      </div>
-      <div class="q" id="question">Loading…</div>
-      <div class="options" id="options"></div>
-      <div class="controls">
-        <div class="score" id="score">Score: 0</div>
-        <button class="btn" id="nextBtn" disabled>Next ▶</button>
+      <div class="finish-wrap" id="finish" style="display:none">
+        <div id="final-score"></div>
+        <div id="final-time"></div>
+        <div id="final-msg"></div>
+        <a href="https://www.youtube.com/@eigophile" target="_blank" rel="noopener"><button id="yt-btn">My YouTube Channel</button></a>
+        <button id="restart-btn">Play Again</button>
       </div>
     </div>
-
-    <div class="footer" id="footer"></div>
   </div>
 
   <script>
-    // Question data (word, correct definition, and distractors)
-    const DATA = [
-      { word: 'abandon', correct: 'to give up / desert', distractors: ['to shrink', 'to postpone', 'to decorate'] },
-      { word: 'concise', correct: 'brief and clear', distractors: ['stubborn', 'vague', 'luxurious'] },
-      { word: 'abundant', correct: 'plentiful', distractors: ['scarce', 'bitter', 'dull'] },
-      { word: 'fragile', correct: 'easily broken', distractors: ['durable', 'toxic', 'ordinary'] },
-      { word: 'diligent', correct: 'hardworking', distractors: ['lazy', 'impulsive', 'careless'] },
-      { word: 'omit', correct: 'to leave out', distractors: ['to emphasize', 'to praise', 'to expand'] },
-      { word: 'resemble', correct: 'to look like', distractors: ['to oppose', 'to thank', 'to own'] },
-      { word: 'sufficient', correct: 'enough', distractors: ['insufficient', 'unpleasant', 'excessive'] },
+    // ===== Data =====
+    const BLANK_HTML = '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)';
+    const questions = [
+      {q: `The wealthy industrialist is admired for his success, but he is best remembered for his ${BLANK_HTML}. He donated millions to hospitals and funded countless scholarships.`, a:["altruism","obstinacy","vanity","syncopation"], correct:0, jaChoices:["利他主義","強情","虚栄心","シンコペーション"], jaSentence:"その裕福な実業家は成功で称賛されているが、最も記憶されているのはその利他主義である。彼は病院に何百万ドルも寄付し、無数の奨学金に資金提供した。"},
+      {q: `The tourists were ${BLANK_HTML} by the intricate temple carvings. They stood in silence, studying every detail in awe.`, a:["enthralled","ostracized","shunned","usurped"], correct:0, jaChoices:["魅了された","追放された","避けられた","奪取された"], jaSentence:"観光客は精巧な寺院の彫刻に魅了された。彼らは沈黙のまま立ち、あらゆる細部を畏敬の念で見つめた。"},
+      {q: `Once the scandal broke, the prime minister was publicly ${BLANK_HTML} by newspapers across the country. His approval ratings plummeted overnight.`, a:["vilified","extolled","marshalled","entwined"], correct:0, jaChoices:["中傷された","称賛された","召集された","絡み合った"], jaSentence:"スキャンダルが明るみに出ると、首相は全国の新聞で公然と中傷された。支持率は一夜にして急落した。"},
+      {q: `The judge showed unusual ${BLANK_HTML} toward the defendant, citing her youth and genuine remorse. The sentence was far lighter than expected.`, a:["clemency","hallucination","embargo","immunity"], correct:0, jaChoices:["寛大さ（恩赦）","幻覚","禁輸","免除（免疫）"], jaSentence:"判事は被告に対して異例の寛大さを示した。若さと真摯な反省を理由に、刑は予想よりはるかに軽かった。"},
+      {q: `Talks reached an ${BLANK_HTML}, with neither side willing to alter its position. As a result, the negotiations were suspended indefinitely.`, a:["impasse","altercation","edict","onus"], correct:0, jaChoices:["行き詰まり","口論","勅令（布告）","負担（責務）"], jaSentence:"協議は行き詰まり、どちらの側も自分たちの立場を変えようとしなかった。その結果、交渉は無期限に中断された。"},
+      {q: `After repeated failures, the team felt ${BLANK_HTML}, but the coach reminded them of their past successes.`, a:["demoralized","invigorated","transposed","annexed"], correct:0, jaChoices:["意気消沈した","元気づいた","置き換えられた","併合された"], jaSentence:"度重なる失敗の後、チームは意気消沈していたが、コーチは彼らに過去の成功を思い出させた。"},
+      {q: `The children were ${BLANK_HTML} by the marine biologist’s demonstration. Even after two hours, they continued to ask questions with excitement.`, a:["engrossed","petrified","condemned","exasperated"], correct:0, jaChoices:["夢中になった","すくみ上がった","非難された","いらだった"], jaSentence:"子どもたちは海洋生物学者の実演に夢中になった。2時間経っても、興奮して質問をし続けた。"},
+      {q: `Although the speech was eloquent, it relied on a ${BLANK_HTML} assumption. Once that flaw was exposed, the entire argument collapsed.`, a:["fallacious","trenchant","salient","luminous"], correct:0, jaChoices:["誤った","手厳しい","顕著な","光り輝く"], jaSentence:"その演説は雄弁だったが、誤った前提に依存していた。その欠陥が露呈すると、議論全体が崩れ落ちた。"},
+      {q: `The festival turned into a complete ${BLANK_HTML} when heavy rain flooded the site. Vendors lost their merchandise and thousands demanded refunds.`, a:["debacle","scapegoat","bastion","recess"], correct:0, jaChoices:["大失敗","身代わり","砦（拠点）","休憩"], jaSentence:"祭りは大雨で会場が冠水し、完全な大失敗に終わった。露店商は商品を失い、数千人が払い戻しを求めた。"},
+      {q: `The deal proved far more ${BLANK_HTML} than anyone had expected. Within a year, profits had doubled and investors lined up to buy shares.`, a:["lucrative","precarious","overt","trivial"], correct:0, jaChoices:["儲かる","不安定な","公然の","取るに足らない"], jaSentence:"その取引は予想をはるかに上回って儲かるものだと分かった。1年以内に利益は倍増し、投資家が株を買おうと列を成した。"},
+      {q: `Susan had such an ${BLANK_HTML} to seafood that even the smell of fish made her feel ill.`, a:["aversion","omen","incarnation","effigy"], correct:0, jaChoices:["嫌悪","前兆","化身","（人の）像"], jaSentence:"スーザンは海産物に強い嫌悪感があり、魚の匂いを嗅ぐだけで気分が悪くなった。"},
+      {q: `The hospital faced shortages of critical supplies, so administrators prioritized the ${BLANK_HTML} of masks, gloves, and ventilators.`, a:["procurement","disposal","upshot","introversion"], correct:0, jaChoices:["調達","処分","結末","内向性"], jaSentence:"病院は必需品が不足していたため、管理者はマスク、手袋、人工呼吸器の調達を優先した。"},
+      {q: `The doctor offered a hopeful ${BLANK_HTML}, saying that with proper treatment, the patient would likely recover fully.`, a:["prognosis","apparition","misnomer","seclusion"], correct:0, jaChoices:["予後の見立て","幽霊（出現）","誤った名称","隔離（隠遁）"], jaSentence:"医師は希望の持てる見通しを示し、適切な治療をすれば患者は全快する可能性が高いと言った。"},
+      {q: `With ${BLANK_HTML}, we realized the decision to cut funding had been a serious mistake. At the time, however, it seemed reasonable.`, a:["hindsight","indemnity","plea","protocol"], correct:0, jaChoices:["後知恵","補償","嘆願","手順（議定書）"], jaSentence:"後知恵で振り返ると、資金削減の決定は重大な誤りだったと分かった。しかし当時は妥当だと思われた。"},
+      {q: `She ${BLANK_HTML} revealed confidential information during the interview. The slip caused embarrassment for the entire company.`, a:["inadvertently","tolerably","hospitably","quaintly"], correct:0, jaChoices:["うっかり","まずまず","親切に","古風に"], jaSentence:"彼女は面接中にうっかり機密情報を明かしてしまった。その失言は会社全体に恥をかかせた。"},
+      {q: `After winning the championship, the team ${BLANK_HTML} in the admiration of their fans. For weeks, celebrations continued in the city.`, a:["basked","cowered","abated","revamped"], correct:0, jaChoices:["（称賛に）浸った","すくんだ","弱まった","刷新した"], jaSentence:"優勝後、チームはファンの称賛に浸った。数週間にわたり、街では祝賀が続いた。"},
+      {q: `The investigation cleared him of wrongdoing. He was finally ${BLANK_HTML} after years of suspicion.`, a:["exonerated","curtailed","eschewed","liquidated"], correct:0, jaChoices:["免罪された","縮小（短縮）された","避けられた","清算された"], jaSentence:"捜査は彼の不正行為を否定した。彼は長年の疑いを経てついに無罪放免となった。"},
+      {q: `The cottage had ${BLANK_HTML} decades of storms without collapsing. Its solid stone walls were a source of local pride.`, a:["weathered","pandered","bartered","bolstered"], correct:0, jaChoices:["耐えてきた","迎合した","物々交換した","強化した（支えた）"], jaSentence:"その山小屋は数十年にわたる嵐に耐えてきた。頑丈な石壁は地域の誇りだった。"},
+      {q: `After weeks of illness, Maria finally ${BLANK_HTML} her fever and regained enough strength to return to work.`, a:["shook off","clammed up","thumbed through","squeezed in"], correct:0, jaChoices:["振り払った","黙り込んだ","（本を）ぱらぱらめくった","（予定に）押し込んだ"], jaSentence:"何週間も病気が続いた後、マリアはついに熱を振り払い、仕事に戻れるほど体力を取り戻した。"},
+      {q: `The author originally submitted a rough outline of the novel, but the editor asked him to expand it. After several months, he had ${BLANK_HTML} the plot and characters into a rich, detailed story.`, a:["fleshed out","trimmed down","stumbled on","rallied around"], correct:0, jaChoices:["肉付けした（具体化した）","削減した","偶然見つけた","結集して支援した"], jaSentence:"著者は当初、粗い構成だけを提出したが、編集者は拡充を求めた。数か月後、彼は筋立てと登場人物に肉付けをして、豊かで詳細な物語に仕上げた。"},
+      {q: `A: Weren't you supposed to give the presentation to the board today?<br>B: Yes, but when I saw all those executives staring at me, I ${BLANK_HTML} and told them I was sick.`, a:["copped out","drifted off","glossed over","reined in"], correct:0, jaChoices:["怖気づいて逃げた（責任回避した）","居眠りした／意識がそれた","うやむやにした","抑え込んだ"], jaSentence:"A: 今日は取締役会でプレゼンのはずじゃなかった？ B: うん。でも重役たちがこっちを見つめているのを見たら怖気づいて、病気だと言ってしまった。"},
+      {q: `Tourists often feel ${BLANK_HTML} when they realize they paid double the normal price for souvenirs that locals buy cheaply.`, a:["ripped off","dragged out","rolled back","jotted down"], correct:0, jaChoices:["ぼったくられた","引き延ばされた","元に戻された","書き留めた"], jaSentence:"観光客は、地元の人が安く買う土産物を自分たちは通常の2倍の値段で買わされたと気づくと、しばしばぼったくられたと感じる。"}
     ];
 
-    // Utility: shuffle
-    const shuffle = (arr) => arr.map(v=>[Math.random(), v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
+    // ===== State & DOM =====
+    let currentQuestion=0, score=0, startTime=0;
+    const quizContainer=document.getElementById('quiz');
+    const nextBtn=document.getElementById('next-btn');
+    const progress=document.getElementById('progress');
+    const finish=document.getElementById('finish');
+    const finalScore=document.getElementById('final-score');
+    const finalTime=document.getElementById('final-time');
+    const finalMsg=document.getElementById('final-msg');
+    const restartBtn=document.getElementById('restart-btn');
+    const ytBtn=document.getElementById('yt-btn');
 
-    // State
-    let idx = 0;
-    let score = 0;
-    let answered = false;
-    const questions = shuffle(DATA);
+    // ===== Sounds =====
+    let audioCtx; function getCtx(){ return audioCtx || (audioCtx=new (window.AudioContext||window.webkitAudioContext)()); }
+    function beep(freq,duration=0.14,gain=0.08,type='sine'){
+      const ctx=getCtx(); const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type=type; o.frequency.value=freq; g.gain.value=0.0001; g.connect(ctx.destination); o.connect(g);
+      o.start(); g.gain.exponentialRampToValueAtTime(gain, ctx.currentTime+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+duration);
+      o.stop(ctx.currentTime+duration+0.02);
+    }
+    function playCorrect(){ beep(523.25,0.12); setTimeout(()=>beep(659.25,0.12),110); setTimeout(()=>beep(783.99,0.18),220); }
+    function playWrong(){ const ctx=getCtx(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(240,ctx.currentTime); o.frequency.linearRampToValueAtTime(170,ctx.currentTime+0.28); g.gain.setValueAtTime(0.15,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.3); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.34); }
 
-    // Elements
-    const qEl = document.getElementById('question');
-    const optEl = document.getElementById('options');
-    const nextBtn = document.getElementById('nextBtn');
-    const statusEl = document.getElementById('status');
-    const scoreEl = document.getElementById('score');
-    const progressEl = document.getElementById('progress');
-    const footerEl = document.getElementById('footer');
+    // ===== TTS =====
+    function speak(text){ if(!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); const v=window.speechSynthesis.getVoices(); const en=v.find(x=>/^en(-|_|$)/i.test(x.lang))||v[0]; if(en) u.voice=en; u.rate=0.95; u.pitch=1; window.speechSynthesis.speak(u); }
+    if('speechSynthesis' in window){ window.speechSynthesis.getVoices(); }
 
-    function render() {
-      const q = questions[idx];
-      progressEl.textContent = `${idx+1} / ${questions.length}`;
-      qEl.textContent = `What does “${q.word}” mean?`;
-      statusEl.textContent = 'Please choose';
-      nextBtn.disabled = true;
-      answered = false;
-      optEl.innerHTML = '';
+    // ===== Utils =====
+    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+    function formatTime(ms){ const s=Math.floor(ms/1000); const m=Math.floor(s/60); const r=s%60; return `${m}:${String(r).padStart(2,'0')}`; }
 
-      const options = shuffle([q.correct, ...q.distractors]);
-      options.forEach(text => {
-        const btn = document.createElement('button');
-        btn.className = 'opt';
-        btn.textContent = text;
-        btn.onclick = () => choose(text, btn, q.correct);
-        optEl.appendChild(btn);
+    // ===== Render =====
+    function render(){
+      if(currentQuestion===0 && !startTime){ startTime = Date.now(); }
+      const q=questions[currentQuestion];
+      progress.textContent=`Question ${currentQuestion+1} of ${questions.length}`;
+      quizContainer.innerHTML=`<div class='question'>${q.q}</div><div class='sentence-ja' id='ja-slot'></div>`;
+
+      const choices=q.a.map((text,idx)=>({text,ja:q.jaChoices[idx],ok:idx===q.correct}));
+      shuffle(choices);
+      const ul=document.createElement('ul'); ul.className='choices';
+      choices.forEach((c,i)=>{
+        const li=document.createElement('li');
+        const row=document.createElement('div'); row.className='choice-row';
+        const icon=document.createElement('button'); icon.className='icon-btn'; icon.type='button'; icon.innerHTML='&#128264;';
+        icon.addEventListener('click', ev => { ev.stopPropagation(); speak(c.text); });
+        const btn=document.createElement('button'); btn.className='choice-btn'; btn.type='button'; btn.textContent=`${i+1}. ${c.text}`; btn.onclick=()=>select(btn,c.ok,choices);
+        row.appendChild(icon); row.appendChild(btn); li.appendChild(row); ul.appendChild(li);
       });
+      quizContainer.appendChild(ul);
+      nextBtn.style.visibility='hidden'; finish.style.display='none'; restartBtn.style.display='none'; ytBtn.style.display='none';
     }
 
-    function choose(choice, btn, correct) {
-      if (answered) return;
-      answered = true;
-      const buttons = [...document.querySelectorAll('button.opt')];
-      buttons.forEach(b => b.disabled = true);
-      const isRight = choice === correct;
-      btn.classList.add(isRight ? 'correct' : 'wrong');
-      statusEl.textContent = isRight ? 'Correct!' : 'Wrong';
-      if (isRight) score++;
-      scoreEl.textContent = `Score: ${score}`;
-      // Highlight correct answer
-      buttons.forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
-      nextBtn.disabled = false;
-
-      if (idx === questions.length - 1) nextBtn.textContent = 'See Results';
+    function select(btn,ok,choices){
+      const buttons=document.querySelectorAll('.choice-btn'); buttons.forEach(b=>b.disabled=true);
+      if(ok){ btn.classList.add('correct'); score++; playCorrect(); }
+      else { btn.classList.add('wrong'); const right=[...buttons].find((b,i)=>choices[i].ok); if(right) right.classList.add('correct'); playWrong(); }
+      // Show JP glosses for all options
+      buttons.forEach((b,i)=>{ if(!b.querySelector('.ja')){ const s=document.createElement('span'); s.className='ja'; s.textContent=` ${choices[i].ja}`; b.appendChild(s); } });
+      // Reveal sentence translation
+      const slot=document.getElementById('ja-slot'); slot.style.visibility='visible'; slot.textContent=questions[currentQuestion].jaSentence;
+      nextBtn.style.visibility='visible';
     }
 
-    nextBtn.addEventListener('click', () => {
-      if (idx < questions.length - 1) {
-        idx++;
-        nextBtn.textContent = 'Next ▶';
+    nextBtn.addEventListener('click',()=>{
+      currentQuestion++;
+      if(currentQuestion<questions.length){
         render();
       } else {
-        showResult();
+        quizContainer.innerHTML='';
+        progress.textContent='Finished';
+        finalScore.textContent=`You scored ${score} out of ${questions.length}!`;
+        finalTime.textContent=`Time: ${formatTime(Date.now()-startTime)}`;
+        // ✅ Special message for perfect score
+        if (score === questions.length) {
+          finalMsg.textContent = "Perfect! You have an impressive vocabulary!";
+        } else {
+          finalMsg.textContent = "Thanks for playing, and please subscribe to my YouTube channel for future updates!";
+        }
+        finish.style.display='flex';
+        ytBtn.style.display='inline-block';
+        restartBtn.style.display='inline-block';
+        nextBtn.style.visibility='hidden';
       }
     });
 
-    function showResult(){
-      const total = questions.length;
-      const rate = Math.round((score/total)*100);
-      qEl.textContent = `Great job! Your score: ${score} / ${total} (${rate}%)`;
-      optEl.innerHTML = '';
-      statusEl.textContent = rate >= 75 ? 'Well done!' : 'Try again!';
-      nextBtn.textContent = 'Restart';
-      nextBtn.disabled = false;
-      nextBtn.onclick = () => window.location.reload();
-      footerEl.innerHTML = '<small>Hint: e.g., diligent = hardworking</small>';
-    }
+    restartBtn.addEventListener('click',()=>{ currentQuestion=0; score=0; startTime=0; finish.style.display='none'; render(); });
 
-    // Initial render
+    // Start
     render();
   </script>
 </body>
