@@ -112,9 +112,29 @@
     // ===== Data =====
     const BLANK_HTML = '(<span class="gap empty" aria-live="polite">&nbsp;</span>)';
     const questions = [
-      // (same 22-question array from previous message…)
-      // For brevity here, assume all 22 objects are included
-      // ...
+      {q:`Despite the heated debate, the chair maintained perfect ${BLANK_HTML}, speaking calmly and treating both sides fairly.`, a:["equanimity","bravado","parsimony","pomposity"], correct:0, jaChoices:["平静さ（冷静沈着）","虚勢","倹約","尊大さ"], jaSentence:"白熱した討論の中でも、議長は終始平静さを保ち、落ち着いて両者を公平に扱った。"},
+      {q:`The committee favored a ${BLANK_HTML} approach—small, testable steps instead of a sweeping overhaul.`, a:["pragmatic","ornate","capricious","derivative"], correct:0, jaChoices:["実務的な（実用主義的な）","装飾的な","気まぐれな","模倣的な"], jaSentence:"委員会は大規模な全面改革ではなく、小さく検証可能な段階を踏む実務的なアプローチを支持した。"},
+      {q:`The CEO issued a rare statement of ${BLANK_HTML}, admitting the rollout had been mishandled.`, a:["contrition","discretion","tenacity","levity"], correct:0, jaChoices:["悔恨（反省）","慎重さ","粘り強さ","軽率さ"], jaSentence:"CEOは、導入が不手際だったと認める異例の反省声明を発表した。"},
+      {q:`Her explanation sounded convincing at first, but on closer inspection it rested on a ${BLANK_HTML} link between cause and effect.`, a:["tenuous","trenchant","effulgent","docile"], correct:0, jaChoices:["希薄な（脆弱な）","痛烈な","光り輝く","従順な"], jaSentence:"彼女の説明は一見もっともらしかったが、よく調べると因果関係が希薄な前提に立脚していた。"},
+      {q:`Public outrage ${BLANK_HTML} lawmakers into drafting stronger consumer-protection rules within days.`, a:["galvanized","usurped","immolated","capsized"], correct:0, jaChoices:["突き動かした（刺激した）","簒奪した","焼身した","転覆させた"], jaSentence:"世論の怒りが議員たちを突き動かし、数日のうちにより強力な消費者保護規則の草案作成へと駆り立てた。"},
+      {q:`After reviewing new evidence, the university ${BLANK_HTML} its earlier decision and reinstated the student.`, a:["rescinded","ratified","subsidized","conflated"], correct:0, jaChoices:["撤回した","承認した","助成した","混同した"], jaSentence:"新証拠の検討後、大学は以前の決定を撤回し、その学生を復学させた。"},
+      {q:`Cutting the budget now would only ${BLANK_HTML} the problem by delaying essential maintenance.`, a:["exacerbate","ameliorate","quantify","emulate"], correct:0, jaChoices:["悪化させる","改善する","数量化する","見習う"], jaSentence:"今予算を削減すると、必要な保守を先延ばしにすることで問題を悪化させるだけだ。"},
+      {q:`The files were stored in a ${BLANK_HTML} server accessible only to a handful of trusted engineers.`, a:["clandestine","ramshackle","plenary","callous"], correct:0, jaChoices:["秘密の（非公開の）","がたがたの","全体出席の","冷淡な"], jaSentence:"そのファイルは、ごく少数の信頼できるエンジニアだけがアクセスできる秘密のサーバーに保管されていた。"},
+      {q:`His apology was so ${BLANK_HTML} that the audience felt he was merely going through the motions.`, a:["perfunctory","rhapsodic","didactic","verdant"], correct:0, jaChoices:["おざなりの（形だけの）","熱狂的な","教訓的な","青々とした"], jaSentence:"彼の謝罪はあまりに形だけだったので、聴衆は単に儀礼的に済ませていると感じた。"},
+      {q:`Negotiators adopted a less ${BLANK_HTML} tone, opening the door to a face-saving compromise.`, a:["belligerent","libertine","diffident","obtuse"], correct:0, jaChoices:["好戦的な","放蕩の","遠慮がちな","鈍感な"], jaSentence:"交渉担当者はより非好戦的な口調に切り替え、面子を保てる妥協の余地が生まれた。"},
+      {q:`Charities stepped in to support families left ${BLANK_HTML} after the factory closure.`, a:["destitute","florid","punctilious","sprightly"], correct:0, jaChoices:["極貧の","華美な","几帳面な","活発な"], jaSentence:"工場閉鎖で極貧に陥った家族を支援するため、慈善団体が介入した。"},
+      {q:`To ${BLANK_HTML} the impact of the outage, the company offered free upgrades and extended support hours.`, a:["mitigate","instigate","obfuscate","divest"], correct:0, jaChoices:["緩和する","扇動する","曖昧にする","売却する"], jaSentence:"障害の影響を緩和するため、同社は無償アップグレードとサポート時間の延長を提供した。"},
+      {q:`The exhibit ${BLANK_HTML} medieval maps with satellite imagery to highlight how perceptions of space have changed.`, a:["juxtaposed","corrugated","extirpated","consecrated"], correct:0, jaChoices:["並置した（対比させた）","波状の","根絶した","聖別した"], jaSentence:"展示は中世の地図と衛星画像を並置し、空間認識の変化を浮き彫りにした。"},
+      {q:`Her notes were so ${BLANK_HTML} that even months later she could reconstruct every step of the experiment.`, a:["meticulous","profligate","mercurial","jejune"], correct:0, jaChoices:["綿密な","浪費的な","気まぐれな","未熟な／味気ない"], jaSentence:"彼女のノートは非常に綿密で、数か月後でも実験の全工程を再現できた。"},
+      {q:`They conducted a ${BLANK_HTML} review of the contract, making discrete edits without alerting competitors.`, a:["surreptitious","sybaritic","bucolic","hedonic"], correct:0, jaChoices:["内密の（こっそりした）","享楽的な","田園の","快楽主義の"], jaSentence:"彼らは競合に気づかれないよう、契約書を内密に見直して点在する修正を加えた。"},
+      {q:`Expanding too quickly can have unintended ${BLANK_HTML}, such as quality drift and supply bottlenecks.`, a:["ramifications","panaceas","euphemisms","confections"], correct:0, jaChoices:["（好ましくない）結果・波及効果","万能薬","婉曲語","菓子（創作物）"], jaSentence:"拡大を急ぎすぎると、品質の逸脱や供給のボトルネックなど望ましくない波及効果が生じ得る。"},
+      {q:`Even after the milestone, her curiosity was ${BLANK_HTML}; she kept probing for a better solution.`, a:["insatiable","amenable","venerable","tractable"], correct:0, jaChoices:["飽くことのない","従順な／受け入れやすい","尊敬すべき","扱いやすい"], jaSentence:"節目を迎えた後も彼女の好奇心は飽くことなく、より良い解決策を探り続けた。"},
+      {q:`The study was initially ${BLANK_HTML} by peers, but later replication cemented its reputation.`, a:["disparaged","lionized","canonized","apotheosized"], correct:0, jaChoices:["けなされた","称賛された","正典化された","神格化された"], jaSentence:"当初その研究は同僚にけなされたが、後の追試で評価が確固たるものになった。"},
+      {q:`A: Why is everyone stuck on this puzzle?<br>B: Because it’s a genuine ${BLANK_HTML}—the data point in two directions at once.`, a:["conundrum","reprieve","catalyst","preamble"], correct:0, jaChoices:["難問（謎）","猶予","触媒","前置き"], jaSentence:"A: みんななぜこのパズルで行き詰まってるの？ B: 本物の難問なんだ。データが同時に二つの方向を示しているから。"},
+      {q:`After a long hiatus, she ${BLANK_HTML} on her coding skills and shipped a polished app in two weeks.`, a:["brushed up","dwelled on","petered out","skewed off"], correct:0, jaChoices:["（技能を）磨き直した","こだわり続けた","次第に消えた","（誤って）逸れた"], jaSentence:"長いブランクの後、彼女はコーディングの腕を磨き直し、2週間で完成度の高いアプリを出荷した。"},
+      {q:`When the project scope ballooned, the team ${BLANK_HTML} and set stricter boundaries.`, a:["drew the line","played it by ear","let it slide","split hairs"], correct:0, jaChoices:["一線を引いた（線引きした）","臨機応変にやった","大目に見た","重箱の隅をつついた"], jaSentence:"プロジェクトの範囲が膨張したとき、チームは一線を引いてより厳格な境界を設定した。"},
+      {q:`A: You promised to finish the report today.<br>B: I know, but I ${BLANK_HTML} and will send it first thing tomorrow morning.`, a:["dropped the ball","hit the ceiling","took a rain check","broke even"], correct:0, jaChoices:["へまをした（しくじった）","激怒した","またの機会にした","損得なしだった"], jaSentence:"A: 今日中にレポートを仕上げるって約束したよね。 B: わかってる、でもしくじった。明日の朝一で送るよ。"},
+      {q:`Tourists who ignore local advisories often get ${BLANK_HTML} with hefty fines for driving into restricted zones.`, a:["slapped","stumped","coddled","beguiled"], correct:0, jaChoices:["科される（不意に与えられる）","困らせられる","甘やかされる","だまされる"], jaSentence:"現地の注意喚起を無視する観光客は、進入禁止区域に入って高額な罰金を科されることが多い。"}
     ];
 
     // ===== State & DOM =====
@@ -127,7 +147,7 @@
     const restartBtn=document.getElementById('restart-btn');
     const ytBtn=document.getElementById('yt-btn');
 
-    // Build Next button once, re-use
+    // Build Next button once (we’ll insert it under the choices each render)
     const nextBtn=document.createElement('button');
     nextBtn.id='next-btn';
     nextBtn.textContent='Next';
@@ -176,9 +196,10 @@
       const q=questions[currentQuestion];
       progress.textContent=`Question ${currentQuestion+1} of ${questions.length}`;
 
-      // Reset inner quiz
+      // Reset the inner quiz area
       quizContainer.innerHTML=`<div class='question'>${q.q}</div><div class='sentence-ja' id='ja-slot'></div>`;
 
+      // Build choices
       const choices=q.a.map((text,idx)=>({text,ja:q.jaChoices[idx],ok:idx===q.correct}));
       shuffle(choices);
       const ul=document.createElement('ul'); ul.className='choices';
@@ -193,7 +214,7 @@
       });
       quizContainer.appendChild(ul);
 
-      // Append Next button right under choices
+      // Append Next button directly beneath the choices
       const actions=document.createElement('div');
       actions.className='actions';
       actions.appendChild(nextBtn);
@@ -209,14 +230,17 @@
       if(ok){btn.classList.add('correct'); score++; playCorrect();}
       else {btn.classList.add('wrong'); const right=[...buttons].find((b,i)=>choices[i].ok); if(right) right.classList.add('correct'); playWrong();}
 
+      // Fill the fixed-width gap with the correct answer (no layout shift)
       const correct = choices.find(c=>c.ok)?.text || '';
       const gapEl = document.querySelector('.question .gap');
       if(gapEl){ gapEl.textContent = correct; gapEl.classList.remove('empty'); }
 
+      // Show JP glosses for all options
       buttons.forEach((b,i)=>{
         if(!b.querySelector('.ja')){ const s=document.createElement('span'); s.className='ja'; s.textContent = ` ${choices[i].ja}`; b.appendChild(s); }
       });
 
+      // Reveal sentence translation
       const slot=document.getElementById('ja-slot');
       slot.style.visibility='visible';
       slot.textContent=questions[currentQuestion].jaSentence;
@@ -246,6 +270,7 @@
       render();
     });
 
+    // Start
     render();
   </script>
 </body>
