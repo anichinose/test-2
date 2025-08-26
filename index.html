@@ -40,8 +40,10 @@
     }
 
     .muted{ color:#cbd5e1; font-size:14px; text-align:center; margin:2px 0 8px; }
+
     #quiz { flex:1; display:flex; flex-direction:column; gap:10px; }
     .question { font-size:18px; line-height:1.6; font-weight:bold; margin:4px 0 0; white-space:normal; }
+    .qnum{ margin-right:8px; color:#e2e8f0; }
 
     /* Fixed-width gap so the sentence never shifts */
     .gap { display:inline-block; width: 16ch; text-align:center; font-weight:700; }
@@ -218,10 +220,15 @@
     function render(){
       if(currentQuestion===0 && !startTime){ startTime = Date.now(); }
       const q=questions[currentQuestion];
-      progress.textContent=`Question ${currentQuestion+1} of ${questions.length}`;
+      const n=currentQuestion+1;
 
-      // Reset the inner quiz area
-      quizContainer.innerHTML=`<div class='question'>${q.q}</div><div class='sentence-ja' id='ja-slot'></div>`;
+      // Update progress line (remain visible)
+      if(progress) progress.textContent=`Question ${n} of ${questions.length}`;
+
+      // Build numbered question + JP translation slot
+      quizContainer.innerHTML=
+        `<div class='question'><span class="qnum">(${n})</span>${q.q}</div>
+         <div class='sentence-ja' id='ja-slot'></div>`;
 
       // Build choices
       const choices=q.a.map((text,idx)=>({text,ja:q.jaChoices[idx],ok:idx===q.correct}));
@@ -278,7 +285,7 @@
         render();
       } else {
         quizContainer.innerHTML='';
-        progress.textContent='Finished';
+        if(progress) progress.textContent='Finished';
         finalScore.textContent=`You scored ${score} out of ${questions.length}!`;
         finalTime.textContent=`Time: ${formatTime(Date.now()-startTime)}`;
 
