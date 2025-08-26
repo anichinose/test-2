@@ -28,7 +28,7 @@
     #quiz { flex:1; display:flex; flex-direction:column; gap:10px; }
     .question { font-size:18px; line-height:1.6; font-weight:bold; margin:4px 0 0; white-space:normal; }
 
-    /* Fixed-width gap so sentence doesn't shift */
+    /* Fixed-width gap so the sentence never shifts */
     .gap { display:inline-block; width: 16ch; text-align:center; font-weight:700; }
     .gap.empty { opacity: .35; }
 
@@ -60,7 +60,7 @@
     .wrong  { background:#b91c1c !important; border-color:#ef4444 !important; }
     .ja { display:inline-block; margin-left:8px; color:#cbd5e1; font-size:14px; }
 
-    /* Put Next right under choices */
+    /* Next button right under choices */
     .actions { display:flex; justify-content:center; align-items:center; margin-top:4px; min-height:40px; }
     #next-btn { padding:12px 18px; font-size:16px; border-radius:10px; border:none; background:#3b82f6; color:#fff; cursor:pointer; visibility:hidden; }
 
@@ -99,6 +99,8 @@
     <div class="header"><h1>英検１級語彙問題</h1></div>
     <div class="muted" id="progress">Question 1 of 22</div>
     <div id="quiz"></div>
+
+    <!-- Keep actions OUTSIDE of render() updates so it never disappears -->
     <div class="actions"><button id="next-btn">Next</button></div>
 
     <div class="finish-wrap" id="finish" style="display:none">
@@ -209,10 +211,7 @@
       });
       quizContainer.appendChild(ul);
 
-      // Move the Next button directly under the choices
-      const actionsEl = document.querySelector('.actions');
-      if (actionsEl) quizContainer.appendChild(actionsEl);
-
+      // Important: do NOT move .actions; it stays in the DOM below #quiz
       nextBtn.style.visibility='hidden';
       finish.style.display='none'; restartBtn.style.display='none'; ytBtn.style.display='none';
     }
