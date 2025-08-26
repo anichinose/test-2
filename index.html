@@ -28,14 +28,7 @@
 
     .header { text-align:center; margin-bottom:8px; }
     .header h1 {
-      margin:0; font-size:24px; color: var(--accent-green);
-      /* VERY thin white outline */
-      -webkit-text-stroke: 0.4px #ffffff;
-    }
-    @supports not (-webkit-text-stroke: 0.4px white){
-      .header h1{
-        text-shadow: 0 0 0.6px #ffffff, 0 0 0.6px #ffffff;
-      }
+      margin:0; font-size:24px; color: var(--accent-green);  /* plain dark green */
     }
 
     .muted{ color:#cbd5e1; font-size:14px; text-align:center; margin:2px 0 8px; }
@@ -155,7 +148,6 @@
       {q:`A: Why is everyone stuck on this puzzle?<br>B: Because it’s a genuine ${BLANK_HTML}—the data point in two directions at once.`, a:["conundrum","reprieve","catalyst","preamble"], correct:0, jaChoices:["難問（謎）","猶予","触媒","前置き"], jaSentence:"A: みんななぜこのパズルで行き詰まってるの？ B: 本物の難問なんだ。データが同時に二つの方向を示しているから。"},
       {q:`After a long hiatus, she ${BLANK_HTML} on her coding skills and shipped a polished app in two weeks.`, a:["brushed up","dwelled on","petered out","skewed off"], correct:0, jaChoices:["（技能を）磨き直した","こだわり続けた","次第に消えた","（誤って）逸れた"], jaSentence:"長いブランクの後、彼女はコーディングの腕を磨き直し、2週間で完成度の高いアプリを出荷した。"},
       {q:`When the project scope ballooned, the team ${BLANK_HTML} and set stricter boundaries.`, a:["drew the line","played it by ear","let it slide","split hairs"], correct:0, jaChoices:["一線を引いた（線引きした）","臨機応変にやった","大目に見た","重箱の隅をつついた"], jaSentence:"プロジェクトの範囲が膨張したとき、チームは一線を引いてより厳格な境界を設定した。"},
-      {q:`A: You promised to finish the report today.<br>B: I know, but I ${BLANK_HTML} and will send it first thing tomorrow morning.`, a:["dropped the ball","hit the ceiling","took a rain check","broke even"], correct:0, jaChoices:["へまをした（しくじった）","激怒した","またの機会にした","損得なしだった"], jaSentence:"A: 今日中にレポートを仕上げるって約束したよね。 B: わかってる、でもしくじった。明日の朝一で送るよ。"},
       {q:`Tourists who ignore local advisories often get ${BLANK_HTML} with hefty fines for driving into restricted zones.`, a:["slapped","stumped","coddled","beguiled"], correct:0, jaChoices:["科される（不意に与えられる）","困らせられる","甘やかされる","だまされる"], jaSentence:"現地の注意喚起を無視する観光客は、進入禁止区域に入って高額な罰金を科されることが多い。"}
     ];
 
@@ -166,6 +158,7 @@
     const finish=document.getElementById('finish');
     const finalScore=document.getElementById('final-score');
     const finalTime=document.getElementById('final-time');
+    const finalMsg=document.getElementById('final-msg');
     const restartBtn=document.getElementById('restart-btn');
     const ytBtn=document.getElementById('yt-btn');
 
@@ -279,6 +272,14 @@
         progress.textContent='Finished';
         finalScore.textContent=`You scored ${score} out of ${questions.length}!`;
         finalTime.textContent=`Time: ${formatTime(Date.now()-startTime)}`;
+
+        // Special message on perfect score
+        if(score === questions.length){
+          finalMsg.innerHTML = `🏆 Perfect score! すばらしい！<br>全問正解でした。実戦でもその調子で！`;
+        }else{
+          finalMsg.textContent = `Thanks for playing, and please subscribe to my YouTube channel for future updates!`;
+        }
+
         finish.style.display='flex';
         ytBtn.style.display='inline-block';
         restartBtn.style.display='inline-block';
