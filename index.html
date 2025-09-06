@@ -3,115 +3,106 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>英検１級語彙問題（セット1〜10 + REVIEW）</title>
+  <title>英検１級語彙問題 — 10セット＋復習</title>
   <style>
     :root{
-      --accent-green:#14532d;
-      --accent-gold: #d4af37;
+      --accent-green: #14532d;  /* dark green for title/borders */
+      --accent-gold:  #d4af37;  /* thin gold for buttons */
+      --tile-h: 90px;          /* uniform tile height on home */
     }
 
-    html, body { height:100%; }
+    html, body { height: 100%; }
     body {
-      font-family: Arial, sans-serif;
-      margin:0; padding:0; overflow:hidden;
+      font-family: Arial, sans-serif; margin:0; padding:0; overflow:hidden;
       display:flex; justify-content:center; align-items:flex-start; min-height:100vh;
       background:url('https://images.unsplash.com/photo-1508264165352-258859e62245?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center/cover fixed;
       color:#fff;
     }
 
-    .quiz-container{
-      width:100vw;
-      height:calc(var(--vh,1vh)*100);
-      background:rgba(0,0,0,.78);
-      padding:clamp(12px,2.2vw,20px);
+    .quiz-shell{
+      width: 100vw; height: calc(var(--vh, 1vh) * 100);
+      background: rgba(0,0,0,.78);
+      padding: clamp(12px, 2.2vw, 20px);
       display:flex; flex-direction:column; box-sizing:border-box; position:relative;
     }
 
-    #home-btn{
-      position:absolute; right:14px; top:14px;
-      padding:10px 14px; font-size:15px; border-radius:10px;
-      background:#000; color:var(--accent-gold);
-      border:1px solid var(--accent-gold); cursor:pointer; display:none;
-    }
-    #home-btn:hover{ background:#0a0a0a; }
-
-    .header { text-align:center; margin-bottom:10px; }
-    .header h1{
-      margin:0; font-size:24px; color:#fff; background:var(--accent-green);
-      display:inline-block; padding:6px 14px; border-radius:12px; line-height:1.15; letter-spacing:.02em;
-    }
-
+    .header { text-align:center; margin-bottom:8px; }
+    .header h1{ margin:0; font-size:24px; color:#fff; background:var(--accent-green); display:inline-block; padding:6px 14px; border-radius:12px; line-height:1.15; letter-spacing:.02em; }
     .muted{ color:#cbd5e1; font-size:14px; text-align:center; margin:2px 0 8px; }
 
-    .question{ font-size:18px; line-height:1.6; font-weight:bold; margin:4px 0 0; white-space:normal; }
-    .qnum{ margin-right:8px; color:#e2e8f0; }
-    .gap{ display:inline-block; width:16ch; text-align:center; font-weight:700; }
-    .gap.empty{ opacity:.35; }
-
-    .sentence-ja{ min-height:64px; visibility:hidden; margin:4px 0 8px; color:#e2e8f0; font-size:15px; }
-
-    .choices{ list-style:none; padding:0; margin:4px 0 0;
-      display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px 14px; }
-    .choice-row{ display:grid; grid-template-columns:38px 1fr; gap:10px; align-items:center; }
-
-    .icon-btn{
-      width:38px; height:38px; border-radius:8px;
-      border:2px solid var(--accent-green);
-      background:#0f172a; color:#e5e7eb; cursor:pointer;
-      display:flex; align-items:center; justify-content:center; font-size:18px;
+    /* ===== Home ===== */
+    #home-view{ display:flex; flex-direction:column; height:100%; }
+    .home-grid{
+      display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; margin-top:4px;
+      grid-auto-rows: var(--tile-h);   /* ← uniform row height */
+      transform-origin: top center;
     }
+    @media (min-width: 1200px){ .home-grid{ grid-template-columns: repeat(5, minmax(0,1fr)); } }
+    @media (min-width: 1440px){ .home-grid{ grid-template-columns: repeat(6, minmax(0,1fr)); } }
+
+    .tile{
+      height: var(--tile-h);          /* ← uniform tile height */
+      padding:12px; border-radius:12px; border:2px solid var(--accent-green);
+      background:#1f2937; color:#fff; cursor:pointer; text-align:center;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+      font-size:18px; font-weight:700; letter-spacing:.2px; box-sizing:border-box;
+    }
+    .tile:hover{ background:#374151; }
+    .tile .title{ display:flex; align-items:center; gap:8px; line-height:1; white-space:nowrap; }
+    .tile .sub{ display:block; font-size:11px; color:#cbd5e1; font-weight:400; letter-spacing:0; line-height:1.1; }
+    .tile.review{ border-color: var(--accent-gold); }
+    .tile[disabled]{ opacity:.45; cursor:not-allowed; }
+    .badge{ display:inline-block; min-width:20px; padding:2px 6px; border-radius:999px; background:var(--accent-gold); color:#000; font-size:12px; font-weight:700; line-height:1; }
+
+    /* ===== Play view ===== */
+    #play-view{ display:none; flex-direction:column; height:100%; gap:6px; }
+
+    .topline{ display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:8px; }
+    .navbtns{ display:flex; gap:8px; align-items:center; justify-content:flex-start; }
+    .topline .header{ margin:0; }
+    .topline .muted{ margin:0; text-align:right; }
+
+    #quiz { flex:1; display:flex; flex-direction:column; gap:10px; }
+    .question { font-size:18px; line-height:1.6; font-weight:bold; margin:4px 0 0; white-space:normal; }
+    .qnum{ margin-right:8px; color:#e2e8f0; }
+    .gap { display:inline-block; width: 16ch; text-align:center; font-weight:700; }
+    .gap.empty { opacity: .35; }
+    .sentence-ja { min-height:64px; visibility:hidden; margin:4px 0 8px; color:#e2e8f0; font-size:15px; }
+
+    .choices { list-style:none; padding:0; margin:4px 0 0; display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px 14px; }
+    .choice-row { display:grid; grid-template-columns:38px 1fr; gap:10px; align-items:center; }
+
+    .icon-btn { width:38px; height:38px; border-radius:8px; border:2px solid var(--accent-green); background:#0f172a; color:#e5e7eb; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; }
     .icon-btn:hover{ background:#1f2937; }
 
-    .choice-btn{
-      width:100%; padding:12px;
-      border:2px solid var(--accent-green);
-      border-radius:8px; background:#1f2937; color:#fff;
-      cursor:pointer; font-size:16px; text-align:left; min-height:48px;
-    }
-    .choice-btn:hover{ background:#374151; }
+    .choice-btn { width:100%; padding:12px; border:2px solid var(--accent-green); border-radius:8px; background:#1f2937; color:#fff; cursor:pointer; font-size:16px; text-align:left; min-height:48px; }
+    .choice-btn:hover { background:#374151; }
 
     .correct{ background:#15803d !important; border-color:#22c55e !important; }
     .wrong  { background:#b91c1c !important; border-color:#ef4444 !important; }
-    .ja{ display:inline-block; margin-left:8px; color:#cbd5e1; font-size:14px; }
+    .ja { display:inline-block; margin-left:8px; color:#cbd5e1; font-size:14px; }
 
-    .actions{ display:flex; justify-content:center; align-items:center; margin-top:4px; min-height:40px; }
-    .gold-btn{
-      padding:12px 18px; font-size:16px; border-radius:10px;
-      background:#000; color:var(--accent-gold);
-      border:1px solid var(--accent-gold);
-      cursor:pointer; font-weight:400; letter-spacing:.2px;
-    }
-    .gold-btn:hover{ background:#0a0a0a; }
+    .actions { display:flex; justify-content:center; align-items:center; margin-top:4px; min-height:40px; }
+    .btn{ padding:12px 18px; font-size:16px; border-radius:10px; background:#000; color: var(--accent-gold); border:1px solid var(--accent-gold); cursor:pointer; font-weight:400; letter-spacing:.2px; }
+    .btn.sm{ padding:8px 12px; font-size:14px; border-radius:8px; }
     #next-btn{ visibility:hidden; }
+    .btn:hover{ background:#0a0a0a; }
+    .btn:focus-visible{ outline:2px solid var(--accent-gold); outline-offset:2px; }
 
-    .finish-wrap{ display:none; position:absolute; inset:0; align-items:center; justify-content:center; gap:14px; padding:20px; text-align:center; flex-direction:column; }
+    .finish-wrap{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:20px; text-align:center; }
     #final-score{ font-size:20px; font-weight:bold; }
     #final-time{ font-size:16px; color:#facc15; }
     #final-msg{ font-size:16px; color:#e2e8f0; max-width:780px; }
     #yt-btn{ padding:12px 18px; font-size:15px; border-radius:8px; border:none; background:#ff0000; color:#fff; cursor:pointer; display:none; }
     #restart-btn{ display:none; }
-
-    /* Home grid */
-    .home-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:12px; margin-top:10px; }
-    .home-card{
-      padding:12px 18px;
-      text-align:center;
-      border-radius:10px;
-      background:#0b1324;
-      border:1px solid var(--accent-green);
-      cursor:pointer;
-      color:#fff;           /* White text for Set/Review labels */
-      font-size:18px;
-      font-weight:bold;
-    }
-    .home-card:hover{ background:#131c2f; }
+    #home-btn{ display:none; }
 
     @media (min-width: 1024px){
+      .header h1{ font-size:26px; }
       .question{ font-size:22px; }
       .sentence-ja{ font-size:18px; min-height:72px; }
       .icon-btn{ width:42px; height:42px; font-size:20px; }
       .choice-btn{ font-size:18px; padding:14px; min-height:54px; }
-      .gold-btn{ font-size:18px; padding:14px 22px; }
       .gap{ width: 18ch; }
     }
     @media (max-width: 560px){
@@ -122,6 +113,7 @@
   </style>
 
   <script>
+    // Mobile 100vh fix
     function setVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
     window.addEventListener('resize', setVH);
     window.addEventListener('orientationchange', setVH);
@@ -129,121 +121,353 @@
   </script>
 </head>
 <body>
-  <div class="quiz-container">
-    <button id="home-btn">Home</button>
-    <div class="header"><h1>英検１級語彙問題</h1></div>
-    <div class="muted" id="progress"></div>
+  <div class="quiz-shell">
 
-    <!-- Home -->
-    <div id="home">
-      <div class="muted">Choose a set (22 questions each) or REVIEW your saved wrong answers.</div>
+    <!-- ===== HOME ===== -->
+    <div id="home-view">
+      <div class="header"><h1>英検１級語彙問題</h1></div>
+      <div class="muted">10セット（各22問）＋間違い直し用の復習</div>
       <div class="home-grid" id="home-grid"></div>
-      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="gold-btn" id="clear-review">Clear REVIEW history</button>
-      </div>
     </div>
 
-    <!-- Quiz -->
-    <div id="quiz" style="display:none"></div>
+    <!-- ===== PLAY ===== -->
+    <div id="play-view">
+      <div class="topline">
+        <div class="navbtns">
+          <button id="home-top" type="button" class="btn sm">Home</button>
+          <button id="back-top" type="button" class="btn sm">Back</button>
+        </div>
+        <div class="header"><h1 id="set-title">英検１級語彙問題</h1></div>
+        <div class="muted" id="progress">Question 1 of 22</div>
+      </div>
 
-    <!-- Finish -->
-    <div class="finish-wrap" id="finish">
-      <div id="final-score"></div>
-      <div id="final-time"></div>
-      <div id="final-msg">Thanks for playing, and please subscribe to my YouTube channel for future updates!</div>
-      <a href="https://www.youtube.com/@eigophile" target="_blank"><button id="yt-btn">My YouTube Channel</button></a>
-      <button id="restart-btn" class="gold-btn">Play Again</button>
-      <button id="finish-home" class="gold-btn">Home</button>
+      <div id="quiz"></div>
+
+      <div class="finish-wrap" id="finish" style="display:none">
+        <div id="final-score"></div>
+        <div id="final-time"></div>
+        <div id="final-msg">Thanks for playing, and please subscribe to my YouTube channel for future updates!</div>
+        <a href="https://www.youtube.com/@eigophile" target="_blank"><button id="yt-btn" type="button">My YouTube Channel</button></a>
+        <div style="display:flex; gap:10px;">
+          <button id="restart-btn" type="button" class="btn">Play Again</button>
+          <button id="home-btn" type="button" class="btn">Home</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    /* ===== Persistence ===== */
-    const STORAGE_KEY = "eiken_vocab_wrong_v1";
-    const loadWrong = () => { try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")); } catch { return new Set(); } };
-    const saveWrong = (s) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(s))); } catch {} };
-    const addWrong = (t) => { const s = loadWrong(); s.add(t); saveWrong(s); };
-    const removeWrong = (t) => { const s = loadWrong(); if (s.delete(t)) saveWrong(s); };
-    const clearWrong = () => { try { localStorage.removeItem(STORAGE_KEY); } catch {} };
-
+    // ===== Data (base 22 questions) =====
     const BLANK_HTML = '(<span class="gap empty" aria-live="polite">&nbsp;</span>)';
+    const BASE_QUESTIONS = [
+      {q:`Despite the heated debate, the chair maintained perfect ${BLANK_HTML}, speaking calmly and treating both sides fairly.`, a:["equanimity","bravado","parsimony","pomposity"], correct:0, jaChoices:["平静さ（冷静沈着）","虚勢","倹約","尊大さ"], jaSentence:"白熱した討論の中でも、議長は終始平静さを保ち、落ち着いて両者を公平に扱った。"},
+      {q:`The committee favored a ${BLANK_HTML} approach—small, testable steps instead of a sweeping overhaul.`, a:["pragmatic","ornate","capricious","derivative"], correct:0, jaChoices:["実務的な（実用主義的な）","装飾的な","気まぐれな","模倣的な"], jaSentence:"委員会は大規模な全面改革ではなく、小さく検証可能な段階を踏む実務的なアプローチを支持した。"},
+      {q:`The CEO issued a rare statement of ${BLANK_HTML}, admitting the rollout had been mishandled.`, a:["contrition","discretion","tenacity","levity"], correct:0, jaChoices:["悔恨（反省）","慎重さ","粘り強さ","軽率さ"], jaSentence:"CEOは、導入が不手際だったと認める異例の反省声明を発表した。"},
+      {q:`Her explanation sounded convincing at first, but on closer inspection it rested on a ${BLANK_HTML} link between cause and effect.`, a:["tenuous","trenchant","effulgent","docile"], correct:0, jaChoices:["希薄な（脆弱な）","痛烈な","光り輝く","従順な"], jaSentence:"彼女の説明は一見もっともらしかったが、よく調べると因果関係が希薄な前提に立脚していた。"},
+      {q:`Public outrage ${BLANK_HTML} lawmakers into drafting stronger consumer-protection rules within days.`, a:["galvanized","usurped","immolated","capsized"], correct:0, jaChoices:["突き動かした（刺激した）","簒奪した","焼身した","転覆させた"], jaSentence:"世論の怒りが議員たちを突き動かし、数日のうちにより強力な消費者保護規則の草案作成へと駆り立てた。"},
+      {q:`After reviewing new evidence, the university ${BLANK_HTML} its earlier decision and reinstated the student.`, a:["rescinded","ratified","subsidized","conflated"], correct:0, jaChoices:["撤回した","承認した","助成した","混同した"], jaSentence:"新証拠の検討後、大学は以前の決定を撤回し、その学生を復学させた。"},
+      {q:`Cutting the budget now would only ${BLANK_HTML} the problem by delaying essential maintenance.`, a:["exacerbate","ameliorate","quantify","emulate"], correct:0, jaChoices:["悪化させる","改善する","数量化する","見習う"], jaSentence:"今予算を削減すると、必要な保守を先延ばしにすることで問題を悪化させるだけだ。"},
+      {q:`The files were stored in a ${BLANK_HTML} server accessible only to a handful of trusted engineers.`, a:["clandestine","ramshackle","plenary","callous"], correct:0, jaChoices:["秘密の（非公開の）","がたがたの","全体出席の","冷淡な"], jaSentence:"そのファイルは、ごく少数の信頼できるエンジニアだけがアクセスできる秘密のサーバーに保管されていた。"},
+      {q:`His apology was so ${BLANK_HTML} that the audience felt he was merely going through the motions.`, a:["perfunctory","rhapsodic","didactic","verdant"], correct:0, jaChoices:["おざなりの（形だけの）","熱狂的な","教訓的な","青々とした"], jaSentence:"彼の謝罪はあまりに形だけだったので、聴衆は単に儀礼的に済ませていると感じた。"},
+      {q:`Negotiators adopted a less ${BLANK_HTML} tone, opening the door to a face-saving compromise.`, a:["belligerent","libertine","diffident","obtuse"], correct:0, jaChoices:["好戦的な","放蕩の","遠慮がちな","鈍感な"], jaSentence:"交渉担当者はより非好戦的な口調に切り替え、面子を保てる妥協の余地が生まれた。"},
+      {q:`Charities stepped in to support families left ${BLANK_HTML} after the factory closure.`, a:["destitute","florid","punctilious","sprightly"], correct:0, jaChoices:["極貧の","華美な","几帳面な","活発な"], jaSentence:"工場閉鎖で極貧に陥った家族を支援するため、慈善団体が介入した。"},
+      {q:`To ${BLANK_HTML} the impact of the outage, the company offered free upgrades and extended support hours.`, a:["mitigate","instigate","obfuscate","divest"], correct:0, jaChoices:["緩和する","扇動する","曖昧にする","売却する"], jaSentence:"障害の影響を緩和するため、同社は無償アップグレードとサポート時間の延長を提供した。"},
+      {q:`The exhibit ${BLANK_HTML} medieval maps with satellite imagery to highlight how perceptions of space have changed.`, a:["juxtaposed","corrugated","extirpated","consecrated"], correct:0, jaChoices:["並置した（対比させた）","波状の","根絶した","聖別した"], jaSentence:"展示は中世の地図と衛星画像を並置し、空間認識の変化を浮き彫りにした。"},
+      {q:`Her notes were so ${BLANK_HTML} that even months later she could reconstruct every step of the experiment.`, a:["meticulous","profligate","mercurial","jejune"], correct:0, jaChoices:["綿密な","浪費的な","気まぐれな","未熟な／味気ない"], jaSentence:"彼女のノートは非常に綿密で、数か月後でも実験の全工程を再現できた。"},
+      {q:`They conducted a ${BLANK_HTML} review of the contract, making discrete edits without alerting competitors.`, a:["surreptitious","sybaritic","bucolic","hedonic"], correct:0, jaChoices:["内密の（こっそりした）","享楽的な","田園の","快楽主義の"], jaSentence:"彼らは競合に気づかれないよう、契約書を内密に見直して点在する修正を加えた。"},
+      {q:`Expanding too quickly can have unintended ${BLANK_HTML}, such as quality drift and supply bottlenecks.`, a:["ramifications","panaceas","euphemisms","confections"], correct:0, jaChoices:["（好ましくない）結果・波及効果","万能薬","婉曲語","菓子（創作物）"], jaSentence:"拡大を急ぎすぎると、品質の逸脱や供給のボトルネックなど望ましくない波及効果が生じ得る。"},
+      {q:`Even after the milestone, her curiosity was ${BLANK_HTML}; she kept probing for a better solution.`, a:["insatiable","amenable","venerable","tractable"], correct:0, jaChoices:["飽くことのない","従順な／受け入れやすい","尊敬すべき","扱いやすい"], jaSentence:"節目を迎えた後も彼女の好奇心は飽くことなく、より良い解決策を探り続けた。"},
+      {q:`The study was initially ${BLANK_HTML} by peers, but later replication cemented its reputation.`, a:["disparaged","lionized","canonized","apotheosized"], correct:0, jaChoices:["けなされた","称賛された","正典化された","神格化された"], jaSentence:"当初その研究は同僚にけなされたが、後の追試で評価が確固たるものになった。"},
+      {q:`A: Why is everyone stuck on this puzzle?<br>B: Because it’s a genuine ${BLANK_HTML}—the data point in two directions at once.`, a:["conundrum","reprieve","catalyst","preamble"], correct:0, jaChoices:["難問（謎）","猶予","触媒","前置き"], jaSentence:"A: みんななぜこのパズルで行き詰まってるの？ B: 本物の難問なんだ。データが同時に二つの方向を示しているから。"},
+      {q:`After a long hiatus, she ${BLANK_HTML} on her coding skills and shipped a polished app in two weeks.`, a:["brushed up","dwelled on","petered out","skewed off"], correct:0, jaChoices:["（技能を）磨き直した","こだわり続けた","次第に消えた","（誤って）逸れた"], jaSentence:"長いブランクの後、彼女はコーディングの腕を磨き直し、2週間で完成度の高いアプリを出荷した。"},
+      {q:`When the project scope ballooned, the team ${BLANK_HTML} and set stricter boundaries.`, a:["drew the line","played it by ear","let it slide","split hairs"], correct:0, jaChoices:["一線を引いた（線引きした）","臨機応変にやった","大目に見た","重箱の隅をつついた"], jaSentence:"プロジェクトの範囲が膨張したとき、チームは一線を引いてより厳格な境界を設定した。"},
+      {q:`Tourists who ignore local advisories often get ${BLANK_HTML} with hefty fines for driving into restricted zones.`, a:["slapped","stumped","coddled","beguiled"], correct:0, jaChoices:["科される（不意に与えられる）","困らせられる","甘やかされる","だまされる"], jaSentence:"現地の注意喚起を無視する観光客は、進入禁止区域に入って高額な罰金を科されることが多い。"}
+    ].map((q,idx)=>({ id: idx, ...q }));
 
-    const quizContainer = document.getElementById('quiz');
-    const progress = document.getElementById('progress');
-    const finish = document.getElementById('finish');
-    const finalScore = document.getElementById('final-score');
-    const finalTime = document.getElementById('final-time');
-    const finalMsg = document.getElementById('final-msg');
-    const restartBtn = document.getElementById('restart-btn');
-    const ytBtn = document.getElementById('yt-btn');
-    const homeBtn = document.getElementById('home-btn');
-    const finishHomeBtn = document.getElementById('finish-home');
+    // ===== State & DOM =====
+    let currentQuestion=0, score=0, startTime=0;
+    let activeQuestions = [];
+    let mode = 'home'; // 'set' | 'review'
+    let currentSet = null; // 1..10 or 'review'
 
-    const nextBtn = document.createElement('button');
-    nextBtn.id = 'next-btn';
-    nextBtn.className = 'gold-btn';
-    nextBtn.textContent = 'Next';
+    // per-question UI state
+    let choiceOrder = [];     // array of arrays (length 4) with indices 0..3 in display order
+    let answers = [];         // boolean | null per question
+    let selectedIdx = [];     // chosen index in display order (0..3) or null
 
-    const homeView = document.getElementById('home');
+    const homeView = document.getElementById('home-view');
     const homeGrid = document.getElementById('home-grid');
-    const clearReviewBtn = document.getElementById('clear-review');
+    const playView = document.getElementById('play-view');
+    const setTitle = document.getElementById('set-title');
+    const quizContainer=document.getElementById('quiz');
+    const progress=document.getElementById('progress');
+    const finish=document.getElementById('finish');
+    const finalScore=document.getElementById('final-score');
+    const finalTime=document.getElementById('final-time');
+    const finalMsg=document.getElementById('final-msg');
+    const restartBtn=document.getElementById('restart-btn');
+    const ytBtn=document.getElementById('yt-btn');
+    const homeBtn=document.getElementById('home-btn');
+    const homeTop=document.getElementById('home-top');
+    const backTop=document.getElementById('back-top');
 
-    /* ===== Example Questions =====
-       Here you’d paste the full 22 items of Set1.
-       For Sets2–10, I duplicated Set1 (same 22).
-       You can edit them later.
-    */
-    const SET1 = [/* ... your 22 questions from before ... */];
-    const SET2 = JSON.parse(JSON.stringify(SET1));
-    const SET3 = JSON.parse(JSON.stringify(SET1));
-    const SET4 = JSON.parse(JSON.stringify(SET1));
-    const SET5 = JSON.parse(JSON.stringify(SET1));
-    const SET6 = JSON.parse(JSON.stringify(SET1));
-    const SET7 = JSON.parse(JSON.stringify(SET1));
-    const SET8 = JSON.parse(JSON.stringify(SET1));
-    const SET9 = JSON.parse(JSON.stringify(SET1));
-    const SET10 = JSON.parse(JSON.stringify(SET1));
+    // Build Next button once
+    const nextBtn=document.createElement('button');
+    nextBtn.id='next-btn';
+    nextBtn.className='btn';
+    nextBtn.textContent='Next';
 
-    const SETS = { set1:SET1, set2:SET2, set3:SET3, set4:SET4, set5:SET5, set6:SET6, set7:SET7, set8:SET8, set9:SET9, set10:SET10 };
+    // ===== Wrong Pool (persist) =====
+    const LS_KEY='eiken_wrong_v1';
+    function loadWrong(){ try{ return new Set(JSON.parse(localStorage.getItem(LS_KEY)||'[]')); }catch(e){ return new Set(); } }
+    function saveWrong(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(Array.from(wrongSet))); }catch(e){} }
+    let wrongSet = loadWrong(); // stores BASE_QUESTIONS ids
 
-    /* ====== Quiz Logic (render, select, etc.) ====== */
-    // (same as your working version — omitted for brevity due to length,
-    // but you’ll keep your existing functions render(), select(), startSet(), finishQuiz(), etc.)
-
-    /* ===== Home ===== */
-    function renderHome(){
-      document.getElementById('home-btn').style.display = 'none';
-      homeView.style.display = '';
-      quizContainer.style.display = 'none';
-      finish.style.display = 'none';
-      progress.textContent = '';
-
-      const wrongCount = Array.from(loadWrong()).length;
-
-      homeGrid.innerHTML = '';
-      for(let i=1;i<=10;i++){
-        const btn = document.createElement('button');
-        btn.className = 'home-card';
-        btn.textContent = `Set ${i}`;
-        btn.onclick = () => startSet(`set${i}`);
-        homeGrid.appendChild(btn);
-      }
-      const reviewBtn = document.createElement('button');
-      reviewBtn.className = 'home-card';
-      reviewBtn.textContent = `REVIEW (${wrongCount})`;
-      reviewBtn.onclick = () => startSet('review');
-      homeGrid.appendChild(reviewBtn);
+    // ===== Audio (correct / wrong) =====
+    let audioCtx;
+    function getCtx(){ return audioCtx || (audioCtx = new (window.AudioContext || window.webkitAudioContext)()); }
+    function beep(freq,duration=0.14,gain=0.08,type='sine'){
+      const ctx=getCtx(); const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type=type; o.frequency.value=freq; g.gain.value=0.0001; g.connect(ctx.destination); o.connect(g);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(gain, ctx.currentTime+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+duration);
+      o.stop(ctx.currentTime+duration+0.02);
+    }
+    function playCorrect(){ beep(523.25,0.12); setTimeout(()=>beep(659.25,0.12),110); setTimeout(()=>beep(783.99,0.18),220); }
+    function playWrong(){
+      const ctx=getCtx(); const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type='triangle'; o.frequency.setValueAtTime(240,ctx.currentTime);
+      o.frequency.linearRampToValueAtTime(170,ctx.currentTime+0.28);
+      g.gain.setValueAtTime(0.15,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.3);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime+0.34);
     }
 
-    clearReviewBtn.addEventListener('click', ()=>{
-      const n = Array.from(loadWrong()).length;
-      if(!n) { alert('No saved wrong answers.'); return; }
-      if(confirm(`Clear ${n} saved wrong items?`)){ clearWrong(); renderHome(); }
+    // ===== TTS =====
+    function speak(text){
+      if(!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      const v=window.speechSynthesis.getVoices();
+      const en=v.find(x=>/^en(-|_|$)/i.test(x.lang))||v[0];
+      if(en) u.voice=en; u.rate=0.95; u.pitch=1;
+      window.speechSynthesis.speak(u);
+    }
+    if ('speechSynthesis' in window) { window.speechSynthesis.getVoices(); }
+
+    // ===== Utils =====
+    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+    function formatTime(ms){ const s=Math.floor(ms/1000); const m=Math.floor(s/60); const r=s%60; return `${m}:${String(r).padStart(2,'0')}`; }
+
+    // ===== Home Grid =====
+    function buildHome(){
+      homeGrid.innerHTML='';
+      for(let i=1;i<=10;i++){
+        const b=document.createElement('button');
+        b.className='tile'; b.dataset.set=i; b.type='button';
+        b.innerHTML=`<div class="title">Set ${i}</div><span class="sub">22 questions</span>`;
+        b.addEventListener('click', ()=> startSet(i));
+        homeGrid.appendChild(b);
+      }
+      const review=document.createElement('button');
+      review.id='review-tile'; review.className='tile review'; review.type='button';
+      review.innerHTML=`<div class="title">Review <span id="review-count" class="badge">0</span></div><span class="sub">間違えた問題</span>`;
+      review.addEventListener('click', ()=>{ if(wrongSet.size>0) startReview(); });
+      homeGrid.appendChild(review);
+      updateReviewBadge();
+      fitHomeGrid();
+    }
+
+    function updateReviewBadge(){
+      const el=document.getElementById('review-count');
+      const tile=document.getElementById('review-tile');
+      if(el) el.textContent=String(wrongSet.size);
+      if(tile){ wrongSet.size===0 ? tile.setAttribute('disabled','true') : tile.removeAttribute('disabled'); }
+    }
+
+    // Fit the 11 tiles into viewport without scrolling by scaling the grid down if necessary
+    function fitHomeGrid(){
+      const hTotal = homeView.clientHeight;
+      const hdr = homeView.querySelector('.header');
+      const mut = homeView.querySelector('.muted');
+      const used = (hdr?hdr.offsetHeight:0) + (mut?mut.offsetHeight:0) + 16; // buffer
+      const avail = Math.max(100, hTotal - used);
+      const natural = homeGrid.scrollHeight;
+      const scale = Math.min(1, avail / natural);
+      homeGrid.style.transform = `scale(${scale})`;
+    }
+
+    function gotoHome(){
+      mode='home'; currentSet=null; activeQuestions=[]; currentQuestion=0; score=0; startTime=0;
+      choiceOrder=[]; answers=[]; selectedIdx=[];
+      finish.style.display='none';
+      playView.style.display='none';
+      homeView.style.display='flex';
+      updateReviewBadge();
+      fitHomeGrid();
+    }
+
+    window.addEventListener('resize', fitHomeGrid);
+
+    // ===== Play Flow =====
+    function startSet(n){
+      mode='set'; currentSet=n; currentQuestion=0; score=0; startTime=0;
+      activeQuestions = BASE_QUESTIONS.map(q=>({...q})); // same 22 each set
+      choiceOrder = Array(activeQuestions.length).fill(null);
+      answers = Array(activeQuestions.length).fill(null);
+      selectedIdx = Array(activeQuestions.length).fill(null);
+      setTitle.textContent = `英検１級語彙問題 — Set ${n}`;
+      homeView.style.display='none';
+      playView.style.display='flex';
+      render();
+    }
+
+    function startReview(){
+      if(wrongSet.size===0){ return; }
+      mode='review'; currentSet='review'; currentQuestion=0; score=0; startTime=0;
+      const ids=[...wrongSet];
+      activeQuestions = ids.map(id=> BASE_QUESTIONS[id]).map(q=>({...q}));
+      choiceOrder = Array(activeQuestions.length).fill(null);
+      answers = Array(activeQuestions.length).fill(null);
+      selectedIdx = Array(activeQuestions.length).fill(null);
+      setTitle.textContent = `英検１級語彙問題 — Review (${activeQuestions.length})`;
+      homeView.style.display='none';
+      playView.style.display='flex';
+      render();
+    }
+
+    function ensureOrder(i){
+      if(!choiceOrder[i]){
+        const order=[0,1,2,3]; shuffle(order); choiceOrder[i]=order;
+      }
+      return choiceOrder[i];
+    }
+
+    function render(){
+      if(currentQuestion===0 && !startTime){ startTime = Date.now(); }
+      const q=activeQuestions[currentQuestion];
+      const n=currentQuestion+1;
+      if(progress) progress.textContent=`Question ${n} of ${activeQuestions.length}`;
+
+      quizContainer.innerHTML=
+        `<div class='question'><span class="qnum">(${n})</span>${q.q}</div>
+         <div class='sentence-ja' id='ja-slot'></div>`;
+
+      const order = ensureOrder(currentQuestion);
+      const ul=document.createElement('ul'); ul.className='choices';
+      order.forEach((origIdx,dispIdx)=>{
+        const text=q.a[origIdx];
+        const ja=q.jaChoices[origIdx];
+        const isCorrect=(origIdx===q.correct);
+        const li=document.createElement('li');
+        const row=document.createElement('div'); row.className='choice-row';
+        const icon=document.createElement('button'); icon.className='icon-btn'; icon.type='button'; icon.innerHTML='&#128264;';
+        icon.addEventListener('click', ev => { ev.stopPropagation(); speak(text); });
+        const btn=document.createElement('button'); btn.className='choice-btn'; btn.type='button'; btn.textContent=`${dispIdx+1}. ${text}`;
+        btn.onclick=()=>select(btn,isCorrect,dispIdx);
+        row.appendChild(icon); row.appendChild(btn); li.appendChild(row); ul.appendChild(li);
+      });
+      quizContainer.appendChild(ul);
+
+      // If previously answered, restore visuals & lock
+      if(answers[currentQuestion] !== null){
+        const buttons = document.querySelectorAll('.choice-btn');
+        const dispSel = selectedIdx[currentQuestion];
+        const correctDisp = order.indexOf(q.correct);
+        buttons.forEach((b,i)=>{
+          b.disabled=true;
+          if(!b.querySelector('.ja')){
+            const jaSpan=document.createElement('span'); jaSpan.className='ja'; jaSpan.textContent = q.jaChoices[ order[i] ]; b.appendChild(jaSpan);
+          }
+          if(i===dispSel){ b.classList.add(answers[currentQuestion] ? 'correct' : 'wrong'); }
+          if(i===correctDisp){ b.classList.add('correct'); }
+        });
+        const gapEl = document.querySelector('.question .gap');
+        if(gapEl){ gapEl.textContent = q.a[q.correct]; gapEl.classList.remove('empty'); }
+        const slot=document.getElementById('ja-slot'); slot.style.visibility='visible'; slot.textContent=q.jaSentence;
+        nextBtn.style.visibility='visible';
+      } else {
+        nextBtn.style.visibility='hidden';
+      }
+
+      const actions=document.createElement('div'); actions.className='actions'; actions.appendChild(nextBtn); quizContainer.appendChild(actions);
+
+      finish.style.display='none'; restartBtn.style.display='none'; ytBtn.style.display='none'; homeBtn.style.display='none';
+    }
+
+    function select(btn,ok,dispIdx){
+      const q=activeQuestions[currentQuestion];
+      const prev = answers[currentQuestion];
+      if(prev===true){ score--; }
+      answers[currentQuestion] = !!ok;
+      selectedIdx[currentQuestion] = dispIdx;
+      if(ok){ score++; playCorrect(); }
+      else { playWrong(); }
+
+      const order = choiceOrder[currentQuestion];
+      const buttons = document.querySelectorAll('.choice-btn');
+      buttons.forEach((b,i)=>{
+        b.disabled=true;
+        if(!b.querySelector('.ja')){ const s=document.createElement('span'); s.className='ja'; s.textContent = activeQuestions[currentQuestion].jaChoices[ order[i] ]; b.appendChild(s); }
+      });
+      const correctDisp = order.indexOf(q.correct);
+      buttons[dispIdx].classList.add(ok ? 'correct' : 'wrong');
+      if(buttons[correctDisp]) buttons[correctDisp].classList.add('correct');
+
+      const gapEl = document.querySelector('.question .gap');
+      if(gapEl){ gapEl.textContent = q.a[q.correct]; gapEl.classList.remove('empty'); }
+      const slot=document.getElementById('ja-slot'); slot.style.visibility='visible'; slot.textContent=q.jaSentence;
+
+      const qid = q.id;
+      if(!ok && typeof qid==='number'){ wrongSet.add(qid); saveWrong(); updateReviewBadge(); }
+      if(ok && mode==='review' && typeof qid==='number' && wrongSet.has(qid)) { wrongSet.delete(qid); saveWrong(); updateReviewBadge(); }
+
+      nextBtn.style.visibility='visible';
+    }
+
+    nextBtn.addEventListener('click',()=>{
+      currentQuestion++;
+      if(currentQuestion<activeQuestions.length){
+        render();
+      } else {
+        quizContainer.innerHTML='';
+        if(progress) progress.textContent='Finished';
+        finalScore.textContent=`You scored ${score} out of ${activeQuestions.length}!`;
+        finalTime.textContent=`Time: ${formatTime(Date.now()-startTime)}`;
+
+        if(score === activeQuestions.length){
+          finalMsg.innerHTML = `🏆 Perfect! すばらしい！<br>全問正解でした。実戦でもその調子で！`;
+        }else{
+          finalMsg.textContent = 'Thanks for playing, and please subscribe to my YouTube channel for future updates!';
+        }
+
+        finish.style.display='flex';
+        ytBtn.style.display='inline-block';
+        restartBtn.style.display='inline-block';
+        homeBtn.style.display='inline-block';
+        nextBtn.style.visibility='hidden';
+      }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      renderHome();
+    restartBtn.addEventListener('click',()=>{
+      currentQuestion=0; score=0; startTime=0; finish.style.display='none'; render();
     });
+    homeBtn.addEventListener('click',()=>{ gotoHome(); });
+
+    homeTop.addEventListener('click',()=>{ gotoHome(); });
+    backTop.addEventListener('click',()=>{
+      if(mode==='home') return;
+      if(currentQuestion>0){ currentQuestion--; render(); }
+    });
+
+    // ===== Boot =====
+    function buildVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
+    window.addEventListener('resize', buildVH); window.addEventListener('orientationchange', buildVH); buildVH();
+
+    buildHome();
+    gotoHome();
   </script>
 </body>
 </html>
