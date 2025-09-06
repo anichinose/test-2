@@ -17,6 +17,7 @@
       display:flex; justify-content:center; align-items:flex-start; min-height:100vh;
       background:url('https://images.unsplash.com/photo-1508264165352-258859e62245?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center/cover fixed;
       color:#fff;
+      -webkit-text-size-adjust: 100%; /* iOS Safari: prevent unexpected zoomed text */
     }
 
     .quiz-shell{
@@ -27,28 +28,36 @@
     }
 
     .header { text-align:center; margin-bottom:8px; }
-    .header h1{ margin:0; font-size:24px; color:#fff; background:var(--accent-green); display:inline-block; padding:6px 14px; border-radius:12px; line-height:1.15; letter-spacing:.02em; }
+    .header h1{
+      margin:0;
+      /* Fluid title sizing for phones → desktops */
+      font-size: clamp(16px, 5.2vw, 26px);
+      color:#fff; background:var(--accent-green);
+      display:inline-block; padding: clamp(4px, 1vw, 6px) clamp(10px, 2.2vw, 14px);
+      border-radius:12px; line-height:1.15; letter-spacing:.02em;
+    }
     .muted{ color:#cbd5e1; font-size:14px; text-align:center; margin:2px 0 8px; }
 
     /* ===== Home ===== */
     #home-view{ display:flex; flex-direction:column; height:100%; }
     .home-grid{
       display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; margin-top:4px;
-      grid-auto-rows: var(--tile-h);   /* ← uniform row height */
+      grid-auto-rows: var(--tile-h);   /* uniform row height */
       transform-origin: top center;
     }
     @media (min-width: 1200px){ .home-grid{ grid-template-columns: repeat(5, minmax(0,1fr)); } }
     @media (min-width: 1440px){ .home-grid{ grid-template-columns: repeat(6, minmax(0,1fr)); } }
 
     .tile{
-      height: var(--tile-h);          /* ← uniform tile height */
+      height: var(--tile-h);
       padding:12px; border-radius:12px; border:2px solid var(--accent-green);
       background:#1f2937; color:#fff; cursor:pointer; text-align:center;
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-      font-size:18px; font-weight:700; letter-spacing:.2px; box-sizing:border-box;
+      font-size: clamp(14px, 4vw, 18px); font-weight:700; letter-spacing:.2px; box-sizing:border-box;
+      overflow:hidden; /* prevent tiny spillovers on small iPhones */
     }
     .tile:hover{ background:#374151; }
-    .tile .title{ display:flex; align-items:center; gap:8px; line-height:1; white-space:nowrap; }
+    .tile .title{ display:flex; align-items:center; justify-content:center; gap:8px; line-height:1; white-space:normal; flex-wrap:wrap; }
     .tile .sub{ display:block; font-size:11px; color:#cbd5e1; font-weight:400; letter-spacing:0; line-height:1.1; }
     .tile.review{ border-color: var(--accent-gold); }
     .tile[disabled]{ opacity:.45; cursor:not-allowed; }
@@ -98,7 +107,7 @@
     #home-btn{ display:none; }
 
     @media (min-width: 1024px){
-      .header h1{ font-size:26px; }
+      /* clamp() already covers large screens; keep other element bumps */
       .question{ font-size:22px; }
       .sentence-ja{ font-size:18px; min-height:72px; }
       .icon-btn{ width:42px; height:42px; font-size:20px; }
@@ -110,6 +119,9 @@
       .question{ font-size:16px; }
       .gap{ width: 14ch; }
     }
+    /* Smaller badge & tighter tiles on very narrow phones */
+    @media (max-width: 420px){ .badge{ font-size:11px; min-width:18px; padding:1px 6px; } }
+    @media (max-width: 380px){ :root{ --tile-h: 80px; } }
   </style>
 
   <script>
@@ -452,7 +464,12 @@
     });
 
     restartBtn.addEventListener('click',()=>{
-      currentQuestion=0; score=0; startTime=0; finish.style.display='none'; render();
+      // Full reset so answers/order are brand new
+      currentQuestion=0; score=0; startTime=0; finish.style.display='none';
+      choiceOrder = Array(activeQuestions.length).fill(null);
+      answers = Array(activeQuestions.length).fill(null);
+      selectedIdx = Array(activeQuestions.length).fill(null);
+      render();
     });
     homeBtn.addEventListener('click',()=>{ gotoHome(); });
 
